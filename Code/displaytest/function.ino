@@ -1,10 +1,9 @@
 
-void drawUI(int encoderPos, int encoderChange) {
+void drawUI(int encoderChange) {
 
   static unsigned int uiState = 1 << 31;
 
   // draw suptitle
-  //Serial.println(encoderPos);
   u8g2.setFont(u8g2_font_tinytim_tf);
   u8g2.drawStr(0, 5, "CONFIGURE TIMELAPSE");
   u8g2.drawLine(0, 6, 125, 6);
@@ -46,11 +45,22 @@ void handleButton() {
   lastButtonState = reading;
 }
 
+int proccessEncoderPosition(unsigned int rawEncoderPos) {
+  static unsigned int prevEncoderPos = ::rawEncoderPos >> 2;
+
+  unsigned int encoderPos = rawEncoderPos >> 2;
+  encoderChange = encoderPos - prevEncoderPos;
+  prevEncoderPos = encoderPos;
+
+return encoderChange;
+
+}
+
 void IRAM_ATTR handleEncoder() {
   static uint8_t lastState = 0;
   uint8_t currentState = (digitalRead(ENCODER_CLK) << 1) | digitalRead(ENCODER_DT);
 
-  // Form a 4-bit value: prev_state << 2 | curr_state
+  // Form a 4 bit value: prev_state << 2 | curr_state
   uint8_t stateTransition = (lastState << 2) | currentState;
 
   // Use a lookup table to determine direction
