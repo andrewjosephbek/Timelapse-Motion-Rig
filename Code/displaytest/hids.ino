@@ -1,10 +1,9 @@
-
-bool handleToggleButton(uint8_t pin, bool &toggle) {
-  bool reading = digitalRead(pin);
+void handleButton() {
+  bool reading = digitalRead(BUTTON_PIN);
 
   if ((millis() - lastDebounceTime) > BUTTON_DEBOUNCE_MILLIS) {
     if (reading == LOW && lastButtonState == HIGH) {
-      toggle = !toggle;
+      uiScroll = !uiScroll;
       lastDebounceTime = millis();
     }
   }

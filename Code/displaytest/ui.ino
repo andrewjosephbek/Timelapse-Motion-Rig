@@ -1,5 +1,4 @@
-
-void drawTimelapseUI(int encoderChange) {
+void drawUI(int encoderChange) {
 
   static unsigned int uiState = 1 << 31;
 
@@ -10,8 +9,9 @@ void drawTimelapseUI(int encoderChange) {
 
   char buffer[5];
 
-  if(uiScroll)
+  if(uiScroll) {
     uiState += encoderChange;
+  }
 
   for (int i = 0; i < N_DISPLAY_ELEMENTS; i++) {
     int j = ((uiState - i) % N_DISPLAY_ELEMENTS + N_DISPLAY_ELEMENTS) % N_DISPLAY_ELEMENTS;
