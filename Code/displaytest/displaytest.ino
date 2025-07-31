@@ -1,4 +1,5 @@
 #include <U8g2lib.h>
+#include "ListInterface.h"
 
 #define SDA_PIN 21
 #define SCL_PIN 22
@@ -8,11 +9,12 @@
 #define BUTTON_DEBOUNCE_MILLIS 50  // milliseconds
 #define ENC_DEBOUNCE_MICRO 100
 #define N_DISPLAY_ELEMENTS 4
+#define N_LIST_ELEMENTS 4
 #define TITLE_X_POS 0
 #define DATA_X_POS 90
 
 // U8G2 constructor for SH1106 128x64 I2C display
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE, /* clock=*/SCL_PIN, /* data=*/SDA_PIN);
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, SCL_PIN, SDA_PIN);
 
 // rotary encoder handling
 volatile unsigned int rawEncoderPos = 1 << 29;
@@ -33,9 +35,10 @@ void IRAM_ATTR handleEncoder();
 void handleButton();
 
 // UI element constants
-const int menuLineYPos[] = { 16, 33, 48, 63};
 
-const char* menuLinesTitles[] = {
+uint8_t menuLineYPos[] = { 16, 33, 48, 63};
+
+char* menuLinesTitles[] = {
   "Move A1:",
   "Move A2:",
   "Duration:",
@@ -56,6 +59,22 @@ int nShots = 1000;
 int nDurationMins = 300;
 
 int* timelapseParams[] = { &axis1deg, &axis2deg, &nDurationMins, &nShots };
+
+char* title = "CONFIGURE TIMELAPSE";
+
+ListInterface TimelapseMenu(
+  &u8g2,
+  N_DISPLAY_ELEMENTS,
+  N_LIST_ELEMENTS,
+  menuLineYPos,
+  menuLineFonts,
+  TITLE_X_POS,
+  DATA_X_POS,
+  menuLinesTitles,
+  timelapseParams,
+  title
+);
+
 
 void setup() {
   Serial.begin(115200);
@@ -81,11 +100,9 @@ void loop() {
 
   encoderChange = proccessEncoderPosition(safeEncoderPos);
 
-  Serial.println(encoderChange);
-
-  handleButton();
+  handleToggleButton(BUTTON_PIN, uiScroll);
 
   u8g2.clearBuffer();
-  drawUI(encoderChange);
+  drawTimelapseUI(encoderChange);
   u8g2.sendBuffer();
 }
