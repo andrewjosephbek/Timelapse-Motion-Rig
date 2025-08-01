@@ -1,45 +1,47 @@
 // ListInterface.h
 
-#ifndef LISTINTERFACE_H
-#define LISTINTERFACE_H
+#ifndef LIST_INTERFACE
+#define LIST_INTERFACE
 
 #include <cstdint>
 #include <U8g2lib.h>
 
-class ListInterface {
+class OLED_128x64_ListInterface {
 
 public:
-  ListInterface(U8G2_SH1106_128X64_NONAME_F_HW_I2C* u8g2_display,
+  OLED_128x64_ListInterface(U8G2_SH1106_128X64_NONAME_F_HW_I2C* u8g2_display,
                 const uint8_t nListElements, 
                 const uint8_t nUIElements, 
-                uint8_t* lineYPos, 
-                const uint8_t** lineFonts,
-                uint8_t dynamicLineXPos, 
-                uint8_t staticLineXPos, 
                 char** staticTextLines, 
                 int** dynamicParamsLines,
                 char* supTitle);
 
-  ~ListInterface();
+  ~OLED_128x64_ListInterface();
 
   void drawList(int8_t scroll, bool uiScroll);
+  inline uint8_t getListIndex();
 
 private:
+  inline int wrappedIndex(int index, int mod);
+  
   U8G2_SH1106_128X64_NONAME_F_HW_I2C* u8g2_display;
   const uint8_t nListElements;
   const uint8_t nUIElements;
 
-  uint8_t* lineYPos;                     // Allocated and copied from const input
-  const uint8_t** lineFonts;              // Shallow copy of const font pointers
+  static const uint8_t lineYPos[4];         
+  static const uint8_t* lineFonts[4];
 
   uint8_t dynamicLineXPos;
   uint8_t staticLineXPos;
 
-  char** staticTextLines;               // Deep copy of input lines
-  int** dynamicParamsLines;            // Shallow copy (you want to edit the original ints)
-  char* supTitle;                          // Deep copy
-
+  char** staticTextLines;              
+  int** dynamicParamsLines;            
+  char* supTitle;                
+  
+  bool hasDynamicLines;
+  uint8_t listIdx;
   unsigned int uiState;
+
 };
 
 #endif

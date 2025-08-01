@@ -1,19 +1,7 @@
-void handleButton() {
-  bool reading = digitalRead(BUTTON_PIN);
-
-  if ((millis() - lastDebounceTime) > BUTTON_DEBOUNCE_MILLIS) {
-    if (reading == LOW && lastButtonState == HIGH) {
-      uiScroll = !uiScroll;
-      lastDebounceTime = millis();
-    }
-  }
-  lastButtonState = reading;
-}
-
-int proccessEncoderPosition(unsigned int rawEncoderPos) {
+int proccessEncoderPosition(unsigned int rawPos) {
   static unsigned int prevEncoderPos = ::rawEncoderPos >> 2;
 
-  unsigned int encoderPos = rawEncoderPos >> 2;
+  unsigned int encoderPos = rawPos >> 2;
   encoderChange = encoderPos - prevEncoderPos;
   prevEncoderPos = encoderPos;
 
