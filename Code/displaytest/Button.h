@@ -7,6 +7,8 @@ class Button {
 
 public:
   Button(uint8_t bttnPin, unsigned long debounceThreshold, bool initToggleState);
+  Button(uint8_t bttnPin, unsigned long debounceThreshold);
+
   void tick();
   bool getToggleState();
   void setToggleState(bool val);

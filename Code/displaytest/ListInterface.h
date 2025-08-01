@@ -19,10 +19,14 @@ public:
   ~OLED_128x64_ListInterface();
 
   void drawList(int8_t scroll, bool uiScroll);
-  inline uint8_t getListIndex();
+  inline uint8_t getListIndex() {
+    return listIdx;
+  }
 
 private:
-  inline int wrappedIndex(int index, int mod);
+  inline int wrappedIndex(int index, int mod) {
+    return (index % mod + mod) % mod;
+  }
   
   U8G2_SH1106_128X64_NONAME_F_HW_I2C* u8g2_display;
   const uint8_t nListElements;
@@ -38,7 +42,6 @@ private:
   int** dynamicParamsLines;            
   char* supTitle;                
   
-  bool hasDynamicLines;
   uint8_t listIdx;
   unsigned int uiState;
 

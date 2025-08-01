@@ -7,6 +7,9 @@
 #define ENCODER_CLK 34
 #define ENCODER_DT 35
 #define BUTTON_PIN 23
+#define BACK_PIN 32
+#define CONFIRM_PIN 33
+
 #define BUTTON_DEBOUNCE_MILLIS 50  // milliseconds
 #define ENC_DEBOUNCE_MICRO 100
 #define N_TL_SCREEN_ITEMS 4
@@ -28,6 +31,17 @@ unsigned int safeEncoderPos = 0;
 void IRAM_ATTR handleEncoder();
 
 
+// UI
+enum menus { MAIN, TIMELAPSE, AXES };
+menus menuState = MAIN;
+
+// Main Menu (MM)
+// Main Menu UI elements
+char* MM_supTitle = "MAIN MENU";
+char* MM_menuLinesTitles[] = { "Conf Timelapse", "Move Axes"};
+
+OLED_128x64_ListInterface MainMenu(&u8g2, N_MM_TOTAL_ITEMS, N_MM_SCREEN_ITEMS, MM_menuLinesTitles, nullptr, MM_supTitle);
+
 // Timelapse Menu (TL)
 // Timelapse UI elements
 char* TL_supTitle = "CONFIGURE TIMELAPSE";
@@ -46,13 +60,6 @@ int* TL_dynamicListParams[] = { &defaultTL.axis1deg, &defaultTL.axis2deg, &defau
 
 OLED_128x64_ListInterface TimelapseMenu(&u8g2, N_TL_TOTAL_ITEMS, N_TL_SCREEN_ITEMS, TL_menuLinesTitles, TL_dynamicListParams, TL_supTitle);
 
-// Main Menu (MM)
-// Main Menu UI elements
-char* MM_supTitle = "MAIN MENU";
-char* MM_menuLinesTitles[] = { "Conf Timelapse", "Move Axes"};
-
-OLED_128x64_ListInterface MainMenu(&u8g2, N_MM_TOTAL_ITEMS, N_MM_SCREEN_ITEMS, MM_menuLinesTitles, nullptr, MM_supTitle);
-
 // Axes Movement Menu (AM)
 // Axes Movement UI elements
 char* AM_supTitle = "MOVE AXES";
@@ -65,7 +72,9 @@ int* AM_dynamicListParams[] = { &moveAxis1Deg, &moveAxis2Deg };
 OLED_128x64_ListInterface AxesMovementMenu(&u8g2, N_AM_TOTAL_ITEMS, N_AM_SCREEN_ITEMS, AM_menuLinesTitles, AM_dynamicListParams, AM_supTitle);
 
 
-Button EncoderButton(BUTTON_PIN, BUTTON_DEBOUNCE_MILLIS, true);
+Button EncoderButton(BUTTON_PIN, BUTTON_DEBOUNCE_MILLIS, false);
+Button BackButton(BACK_PIN, BUTTON_DEBOUNCE_MILLIS);
+Button ConfirmButton(CONFIRM_PIN, BUTTON_DEBOUNCE_MILLIS);
 
 void setup() {
   // Initialize display
@@ -75,6 +84,8 @@ void setup() {
   pinMode(ENCODER_CLK, INPUT);
   pinMode(ENCODER_DT, INPUT);
   pinMode(BUTTON_PIN, INPUT);
+  pinMode(BACK_PIN, INPUT);
+  pinMode(CONFIRM_PIN, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_CLK), handleEncoder, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER_DT), handleEncoder, CHANGE);
@@ -89,7 +100,38 @@ void loop() {
   encoderChange = proccessEncoderPosition(safeEncoderPos);
 
   EncoderButton.tick();
+  ConfirmButton.tick();
+  BackButton.tick();
 
-  TimelapseMenu.drawList(encoderChange, EncoderButton.getToggleState());
+  switch(menuState) {
+    case MAIN:
+      MainMenu.drawList(encoderChange, true);
+
+      if(ConfirmButton.getPressState() == false && EncoderButton.getPressState() == false)
+        break;
+
+      EncoderButton.setToggleState(true);
+
+      if(MainMenu.getListIndex() == 0) 
+        menuState = TIMELAPSE;
+      else if(MainMenu.getListIndex() == 1)
+        menuState = AXES;
+      break;
+
+    case TIMELAPSE:
+      TimelapseMenu.drawList(encoderChange, EncoderButton.getToggleState());
+
+      if(BackButton.getPressState() == true)
+        menuState = MAIN;
+      break;
+    case AXES:
+      AxesMovementMenu.drawList(encoderChange, EncoderButton.getToggleState());
+
+      if(BackButton.getPressState() == true)
+        menuState = MAIN;
+      break;
+    default:
+      menuState = MAIN;
+  }
 
 }

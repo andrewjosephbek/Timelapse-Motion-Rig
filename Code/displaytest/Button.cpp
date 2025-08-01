@@ -6,6 +6,10 @@ Button::Button(uint8_t bttnPin, unsigned long debounceThreshold, bool initToggle
 :  bttnPin(bttnPin), debounceThreshold(debounceThreshold), toggleState(initToggleState), lastDebounceTime(0), lastButtonState(HIGH)
 {}
 
+Button::Button(uint8_t bttnPin, unsigned long debounceThreshold)
+:  bttnPin(bttnPin), debounceThreshold(debounceThreshold), toggleState(false), lastDebounceTime(0), lastButtonState(HIGH)
+{}
+
 void Button::tick() {
   bool reading = digitalRead(bttnPin);
 
