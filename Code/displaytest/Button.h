@@ -10,9 +10,9 @@ public:
   Button(uint8_t bttnPin, unsigned long debounceThreshold);
 
   void tick();
-  bool getToggleState();
-  void setToggleState(bool val);
-  bool getPressState();
+  inline bool getToggleState() { return toggleState; }
+  inline void setToggleState(bool val) { toggleState = val; }
+  inline bool getPressState() { return pressEvent; }
 
 private:
   uint8_t bttnPin;

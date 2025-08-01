@@ -4,8 +4,6 @@
 #include <U8g2lib.h>
 
 void setup() {
-  u8g2.begin();
-
   pinMode(ENCODER_CLK, INPUT);
   pinMode(ENCODER_DT, INPUT);
   pinMode(BUTTON_PIN, INPUT);
@@ -14,28 +12,36 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_CLK), handleEncoder, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER_DT), handleEncoder, CHANGE);
+
+  // Start up the display
+  u8g2.begin();
+
 }
 
 void loop() {
 
+  // Copy the absolute encoder position
   noInterrupts();
   safeEncoderPos = rawEncoderPos;
   interrupts();
 
-  encoderChange = proccessEncoderPosition(safeEncoderPos);
+  // Find the change in encoder position
+  encChange = proccessEncoderPosition(safeEncoderPos);
 
-  EncoderButton.tick();
+  // Update button states
+  EncButton.tick();
   ConfirmButton.tick();
   BackButton.tick();
 
+  // UI logic
   switch(menuState) {
     case MAIN:
-      MainMenu.drawList(encoderChange, true);
+      MainMenu.drawList(encChange, true);
 
-      if(ConfirmButton.getPressState() == false && EncoderButton.getPressState() == false)
+      if(ConfirmButton.getPressState() == false && EncButton.getPressState() == false)
         break;
 
-      EncoderButton.setToggleState(true);
+      EncButton.setToggleState(true);
 
       if(MainMenu.getListIndex() == 0) 
         menuState = TIMELAPSE;
@@ -44,17 +50,19 @@ void loop() {
       break;
 
     case TIMELAPSE:
-      TimelapseMenu.drawList(encoderChange, EncoderButton.getToggleState());
+      TimelapseMenu.drawList(encChange, EncButton.getToggleState());
 
       if(BackButton.getPressState() == true)
         menuState = MAIN;
       break;
+
     case AXES:
-      AxesMovementMenu.drawList(encoderChange, EncoderButton.getToggleState());
+      AxesMovementMenu.drawList(encChange, EncButton.getToggleState());
 
       if(BackButton.getPressState() == true)
         menuState = MAIN;
       break;
+
     default:
       menuState = MAIN;
   }

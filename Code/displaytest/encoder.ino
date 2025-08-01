@@ -2,10 +2,10 @@ int8_t proccessEncoderPosition(unsigned int rawPos) {
   static unsigned int prevEncoderPos = ::rawEncoderPos >> 2;
 
   unsigned int encoderPos = rawPos >> 2;
-  encoderChange = encoderPos - prevEncoderPos;
+  encChange = encoderPos - prevEncoderPos;
   prevEncoderPos = encoderPos;
 
-return encoderChange;
+return encChange;
 
 }
 

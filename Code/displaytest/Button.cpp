@@ -24,15 +24,3 @@ void Button::tick() {
   }
   lastButtonState = reading;
 }
-
-bool Button::getToggleState() {
-  return toggleState;
-}
-
-void Button::setToggleState(bool val) {
-  toggleState = val;
-}
-
-bool Button::getPressState() {
-  return pressEvent;
-}

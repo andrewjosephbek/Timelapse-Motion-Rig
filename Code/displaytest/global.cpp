@@ -6,7 +6,7 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, SCL_PIN, SDA_PIN
 // --- Encoder State ---
 volatile unsigned int rawEncoderPos = 1 << 31;
 volatile unsigned long lastInterruptTime = 0;
-int8_t encoderChange = 0;
+int8_t encChange = 0;
 unsigned int safeEncoderPos = 0;
 
 // --- Menu State ---
@@ -37,6 +37,6 @@ int* AM_dynamicListParams[] = { &moveAxis1Deg, &moveAxis2Deg };
 OLED_128x64_ListInterface AxesMovementMenu(&u8g2, N_AM_TOTAL_ITEMS, N_AM_SCREEN_ITEMS, AM_menuLinesTitles, AM_dynamicListParams, AM_supTitle);
 
 // --- Buttons ---
-Button EncoderButton(BUTTON_PIN, BUTTON_DEBOUNCE_MILLIS, false);
+Button EncButton(BUTTON_PIN, BUTTON_DEBOUNCE_MILLIS, false);
 Button BackButton(BACK_PIN, BUTTON_DEBOUNCE_MILLIS);
 Button ConfirmButton(CONFIRM_PIN, BUTTON_DEBOUNCE_MILLIS);

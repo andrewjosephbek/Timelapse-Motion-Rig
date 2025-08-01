@@ -33,7 +33,7 @@ extern U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2;
 
 extern volatile unsigned int rawEncoderPos;
 extern volatile unsigned long lastInterruptTime;
-extern int8_t encoderChange;
+extern int8_t encChange;
 extern unsigned int safeEncoderPos;
 
 extern menus menuState;
@@ -57,7 +57,7 @@ extern int moveAxis2Deg;
 extern OLED_128x64_ListInterface AxesMovementMenu;
 
 // Buttons
-extern Button EncoderButton;
+extern Button EncButton;
 extern Button BackButton;
 extern Button ConfirmButton;
 
