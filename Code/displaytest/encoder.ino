@@ -1,4 +1,4 @@
-int proccessEncoderPosition(unsigned int rawPos) {
+int8_t proccessEncoderPosition(unsigned int rawPos) {
   static unsigned int prevEncoderPos = ::rawEncoderPos >> 2;
 
   unsigned int encoderPos = rawPos >> 2;
